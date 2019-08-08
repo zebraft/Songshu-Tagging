@@ -1,0 +1,143 @@
+from Book2 import Book 
+from collections import defaultdict
+from bs4 import BeautifulSoup
+import bs4
+from urllib import request
+import urllib
+import time
+import random
+import re
+import os
+import glob
+import logging
+
+class SongShu(Book):
+    """SongShu Dataset
+    
+    Attributes:
+        flat_meta : a list of bookmarks in SonShu extracted from Han-Ji
+        flat_passages : a list of ``passages`` in SongShu. 
+            Each ``passages`` contain a list of passage in a piece of work.
+            i.e., flat_passages = [passages1(list, passages2(list), ...]
+                  passages1 = [passage1(str), passage2(str), ...]    
+                  
+    Args: same as Book class
+    
+    Methods:
+        extract_meta(): Extract meta data from self.paths. Index 3 in path for scroll, 4 for category, 5 for author name, after 5 for the title. The method would check the author name using author_bag automatically.    
+        extract_passages(): Extract passages based on indent==2 & padding==0. 
+                            If there's no passage in this page, merge all texts into one string.
+    """
+    
+    def __init__(self, date, creator):
+        Book.__init__(self, 'SongShu', date, creator)
+        self.RSTR2NE = {}
+        self.RSTR2CAT = {}
+        self.NE_SORTED = []
+        
+
+    def extract_all(self):
+        self.update_rare_chars()
+        self.strip_all_irrelevant_tags()
+
+        # preprocessing the songshu data to get metadata and bookmarks
+        # and separate the passages in every pages
+        self.extract_paths()
+        self.extract_meta()
+        self.extract_passages()
+        self.__repr__()
+
+    def extract_meta(self):
+        self.flat_meta = []
+        for path in self.paths:
+            meta = {}
+            bookmark_split = path.split('／')
+
+            # Navie implementation
+            category = bookmark_split[3].split('\u3000')[0] # 本紀、志、列傳
+            scroll   = bookmark_split[4].split('\u3000')[0] # 卷 N 
+            categrory_number   = bookmark_split[4].split('\u3000')[1] # 本紀第 N 
+            title = '/'.join(bookmark_split[5:]).replace('..[底本：宋元明三朝遞修本]', '')
+            meta['category'] = category
+            meta['category_number'] = categrory_number
+            meta['scroll'] = scroll
+            meta['title']  = title
+            self.flat_meta.append(meta)
+
+    def extract_passages(self):
+        '''Extract passages from SongShu, which divided by the ( indent == 2 & padding == 0 )'''
+        self.flat_passages = []
+
+        for body,path in zip(self.flat_bodies, self.paths):
+            texts  = body.find_all('div', attrs={'style': True})
+            try:
+                self.flat_passages.append(
+                    self._passage2paragraphs(texts)
+                )
+            except IndexError as e:
+                logging.warning("Not the right indent.{}".format(path))
+                self.flat_passages.append(
+                    ''.join([text.text for text in texts])
+                )
+
+
+    def _passage2paragraphs(self, texts):
+        '''Organize a passage with its paragraph, which is defined using ( indent == 2& padding == 0 )
+        '''
+        # concatenent the paragraphs with indents not equal to 2 to the previous paragraph
+        new_texts = []
+        
+        # get the pairs of indents and paddings 
+        indent_padding_list = self._indent_and_padding(texts)
+        
+        for text, (indent, padding) in zip(texts, indent_padding_list):
+            if indent == 2 and padding == 0:
+                # only save the text, without tags
+                new_texts.append(
+                    ''.join([s for s in text if isinstance(s, bs4.NavigableString)])
+                )
+            else:
+                new_texts[-1] += ''.join([s for s in text if isinstance(s, bs4.NavigableString)])
+            
+        return new_texts   
+
+
+    def test(self, txt):
+        return None
+        
+    def buildDictionaries(self, dictSource):
+    
+        with open(dictSource, 'r', encoding='utf-8') as fi:
+            for line in fi:
+                (s, category, rstr) = (None, None, None) # NE, category, random string
+                try:
+                    (s, category, rstr) = line.strip().split()
+                    self.NE_SORTED.append((s, rstr))
+                except:
+                    print(f"problem: {s}")
+                    pass
+                if rstr in self.RSTR2NE:
+                    print(f"repeated: {rstr}")
+                else:
+                    self.RSTR2NE[rstr]  = s
+                    self.RSTR2CAT[rstr] = category
+                    
+                        
+    def tagEncode(self, txt): # encode text with random string
+        '''
+        Tag txt with  
+        '''
+        for (s, rstr) in self.NE_SORTED:
+            if s in txt:
+                txt = txt.replace(s, rstr)
+        return txt    
+    
+    def tagDecode(self, txt): # encode text with random string
+        '''
+        Turn random string back into original NE,
+        but tagged with appropriate XML tag
+        '''
+        for k in self.RSTR2NE.keys():
+            if k in txt:
+                txt = txt.replace(k, f"<{self.RSTR2CAT[k]}>{self.RSTR2NE[k]}</{self.RSTR2CAT[k]}>")
+        return txt
