@@ -16,7 +16,7 @@
     謝尚	person	012f8ef5758adbed3b679c95ec3bb7fb
     王濛	person	fc054b7e6d686222b9a9dfa0c2c892ac
     桓溫	person	d33e5ce8a291b290d1bb4f0846617313
-    (Note: The 32-character hexadecimal string is the MD5 hash, probabilistically unqiue, of the NE)
+(Note: The 32-character hexadecimal string is the MD5 hash, probabilistically unqiue, of the NE)
 
 ### from the file "NE.txt" (the global NE list), which has the following format:
 
