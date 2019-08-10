@@ -14,12 +14,12 @@ This notebook creates the file "NE_randstr.txt", which has the following format:
 
 from the file "NE.txt" (the global NE list), which  the following format:
 
-  司馬裒	person
-  司馬尚	person
-  晉愍帝司馬鄴	person
-  漢昭文帝李壽	person
-  祖道重	person
-  孫盛	person
-  王允之	person
-  王述	person
-  王羲之	person
+    司馬裒	person
+    司馬尚	person
+    晉愍帝司馬鄴	person
+    漢昭文帝李壽	person
+    祖道重	person
+    孫盛	person
+    王允之	person
+    王述	person
+    王羲之	person
