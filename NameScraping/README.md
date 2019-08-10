@@ -1,4 +1,6 @@
-This notebook creates the file "NE_randstr.txt", which has the following format:
+## Notebook 'BuildGlobalNEList.ipynb' 
+### Creates the file "NE_randstr.txt", which has the following format:
+#### (sorted by string length, descending order)
 
     NE    Category MD5 hash string
     ===== ======== ====================================
@@ -16,7 +18,7 @@ This notebook creates the file "NE_randstr.txt", which has the following format:
     桓溫	person	d33e5ce8a291b290d1bb4f0846617313
     (Note: The 32-character hexadecimal string is the MD5 hash, probabilistically unqiue, of the NE)
 
-from the file "NE.txt" (the global NE list), which  the following format:
+### from the file "NE.txt" (the global NE list), which has the following format:
 
     司馬裒	person
     司馬尚	person
