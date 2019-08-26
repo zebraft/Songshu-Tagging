@@ -4266,7 +4266,6 @@
 呂光	person	4ce520002bd43fc00ec821f4c22ac0d5
 元邕	person	7ffb8d36ed5b9eb0b797ca734ff5e589
 慕璝	person	41e345fc3f3c9cef593cab5a09d6132a
-於中	person	752a717513fc2233e17fee29a14e906d
 地於	person	5f88dea04d79bdf5b46ec3753bbda604
 元延	person	2eaa5044c6a9dc0d4e83d91600f714e3
 孔雀	person	925a236b56ffbb52679ba78013af699e
