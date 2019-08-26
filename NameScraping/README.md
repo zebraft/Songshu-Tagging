@@ -1,4 +1,8 @@
 ## Notebook 'BuildGlobalNEList.ipynb' 
+
+### Notes
+2019-08-26: Removed the person name 於中 from global NE list.
+
 ### Creates the file "NE_randstr.txt", which has the following format:
 #### (sorted by string length, descending order)
 
