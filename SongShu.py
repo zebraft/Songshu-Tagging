@@ -617,6 +617,8 @@ class SongShu(Book):
             if month != '':  # month
                 if month.startswith('閏'):
                     month = cn2num(month) + 0.1
+                elif month.startswith('正'):
+                    month = cn2num('一')
                 else:
                     month = cn2num(month)
             elif month == '': # day
