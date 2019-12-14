@@ -10,7 +10,10 @@ https://hackmd.io/@DZR/rJF0y0M2r
 
 Songshu.py
 
-(1) Set <time> tags to <time id="UNKNOWN"> if unable to identify era name or year.
+(1) Set time tags to 
+    
+    <time id="UNKNOWN">
+if unable to identify era name or year.
 
 (2) For leap month (e.g. 閏十二月), the month field of "id" attribute has an extra "0.5". For example,
     
