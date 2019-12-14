@@ -13,7 +13,7 @@ Songshu.py
 (1) Set time tags to 
     
     <time id="UNKNOWN">
-if unable to identify era name or year.
+if unable to identify era name or year (e.g., fileno = 611, 619, 637, 638, 642, 689, 695, 705, 723, 725, 747).
 
 (2) For leap month (e.g. 閏十二月), the month field of "id" attribute has an extra "0.5". For example,
     
