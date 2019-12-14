@@ -14,6 +14,7 @@ from copy import deepcopy
 from Surname import Surname
 from pycnnum import cn2num
 import sqlite3
+import pickle
 
 ### Some "global variables" defined outside the class
 #CJK_DIGIT  = r'元一二三四五六七八九十'
@@ -108,6 +109,16 @@ class SongShu(Book):
 
     def load_htmls(self, path):
         super().load_htmls(path=path)
+        BOOKSIZE = len(self.flat_bodies) # no. of HTML files in the book
+        self.BOOKSIZE = BOOKSIZE
+        self.fullnames = [set() for j in range(BOOKSIZE)]
+        # Create a list to hold all person names extracted from the bookmarks
+        self.BOOKMARK_PERSONS = [[] for k in range(BOOKSIZE)]
+        # Create a clean list of bookmarks (without the page numbers and sources)
+        self.paths_cleaned = [None for k in range(BOOKSIZE)]
+
+    def load_flat_bodies(self, path):
+        self.flat_bodies = pickle.load(open(path, "rb"))
         BOOKSIZE = len(self.flat_bodies) # no. of HTML files in the book
         self.BOOKSIZE = BOOKSIZE
         self.fullnames = [set() for j in range(BOOKSIZE)]
@@ -608,25 +619,37 @@ class SongShu(Book):
         #print(TEs)
         for te in TEs:
             (era, year, month, day) = list(regex_date2.findall(te.text)[0])  # comps = components
-            if year in ['元年']:  # year
-                year = 1
+            (year0, month0) = ('', '')
+            if year.startswith('元年'):  # year
+                year0 = 1
             elif year == '': # empty string
-                pass # nothing to do
+                year0 = ''
+            elif year[-1] in '春夏秋冬':
+                year0 = cn2num(year[:-2]) # remove r'年[春夏秋冬]'
+                pos = '春夏秋冬'.index(year[-1])
+                month0 = 3*(pos+1)-1  # turns 春 into 2, 夏 into 5, 秋 into 8, 冬 into 11 
             else:
-                year = cn2num(year) 
+                year0 = cn2num(year[:-1])
+            #print(f"(era, year, month, day) = ({era}, {year}, {month}, {day})")
+            #assert year != ''
             if month != '':  # month
                 if month.startswith('閏'):
-                    month = cn2num(month) + 0.1
-                elif month.startswith('正'):
-                    month = cn2num('一')
+                    month_num_zh = month[1:-1]
+                    if month_num_zh in ['正','一']:
+                        month0 = 1
+                    else:
+                        month0 = cn2num(month_num_zh) + 0.5  # remove 閏 and 月 first
+                elif month.startswith('正'): # 正月 is the same as 一月
+                    month0 = 1
                 else:
-                    month = cn2num(month)
+                    month0 = cn2num(month)
             elif month == '': # day
+                #month0 = ''
                 pass # nothing to do
             if day.endswith('日'):
-                day = cn2num(day)
+                day = cn2num(day[:-1])
                 
-            COLLECTION.append([era, year, month, day])
+            COLLECTION.append([era, year0, month0, day])
         return(COLLECTION)
 
     def isLater(self, era1, era2):
@@ -687,6 +710,28 @@ class SongShu(Book):
         #lastlastdate = dlist[0]
         #lastdate     = dlist[1] 
         #if lastdate[0] == '':
+
+        # both era name and  year is missing (e.g. fileno=611, "五月五日")
+        ZEROTH_ENTRY_VALID = True
+        if dlist[0][0] == '' and dlist[0][1] == '': 
+            del dlist[0] # just remove the 
+            ZEROTH_ENTRY_VALID = False
+
+        # if the first (0th) element of dlist lacks an era name, fill it in
+        # with the *last element from the previous fileno*
+        if dlist[0][0] == '': # era missing
+            dateListFromPreviousFileno = self.dateList(fileno-1)
+            if len(dateListFromPreviousFileno) > 0:
+                backup_era = self.fillMissingDateComponents(fileno-1)[-1][0] # from last time node of previous fileno
+                if DEBUG: print(f"backup_era = {backup_era}")
+                dlist[0][0] = backup_era
+        if dlist[0][1] == '': # year missing
+            dateListFromPreviousFileno = self.dateList(fileno-1)
+            if len(dateListFromPreviousFileno) > 0:
+                backup_year = self.fillMissingDateComponents(fileno-1)[-1][1] # same
+                if DEBUG: print(f"backup_year = {backup_year}")
+                dlist[0][1] = backup_year
+
         #    lastdate[0] == ''
         for idx, d in enumerate(dlist):
             [era, year, month, day] = d
@@ -697,21 +742,8 @@ class SongShu(Book):
             else: # idx > 1
                 dlist[idx] = self.updateCurrentDate(dlist[idx], dlist[idx-1], dlist[idx-2], DEBUG=DEBUG)
 
-        # if the first (0th) element of dlist lacks an era name, fill it in
-        # with the *last element from the previous fileno*
-        if dlist[0][0] == '': # era missing
-            dateListFromPreviousFileno = self.dateList(fileno-1)
-            if len(dateListFromPreviousFileno) > 0:
-                backup_era = self.dateList(fileno-1)[-1][0] # from last time node of previous fileno
-                if DEBUG: print(f"backup_era = {backup_era}")
-                dlist[0][0] = backup_era
-        if dlist[0][1] == '': # year missing
-            dateListFromPreviousFileno = self.dateList(fileno-1)
-            if len(dateListFromPreviousFileno) > 0:
-                backup_year = self.dateList(fileno-1)[-1][1] # same
-                if DEBUG: print(f"backup_year = {backup_year}")
-                dlist[0][1] = backup_year
-            
+        if not ZEROTH_ENTRY_VALID:
+            dlist = [['','','','']] + dlist  # prepend with an empty entry    
         return dlist
 
     #### utility function to return Gregorian year from era name + year
@@ -752,7 +784,10 @@ class SongShu(Book):
             era, era_year, month, day = parsedNodes[idx]
             if era != '':
                 gregorian_year = self.eraNameYear2GregorianYear(era, era_year, dynasty=None)
-                node['id'] = f"{gregorian_year}-{str(month).zfill(2)}-{str(day).zfill(2)}"
+                if '.5' in str(month): # 閏月
+                    node['id'] = f"{gregorian_year}-{str(month).zfill(4)}-{str(day).zfill(2)}"
+                else:
+                    node['id'] = f"{gregorian_year}-{str(month).zfill(2)}-{str(day).zfill(2)}"
             else:
                 node['id'] = f"UNKNOWN"
         # print(f"node = {node}")    
