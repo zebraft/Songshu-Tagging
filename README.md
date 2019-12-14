@@ -1,5 +1,5 @@
-# Songshu-Tagging
-Songshu tagging project
+# Dignital SongShu Project
+Songshu tagging
 
 Digital Songshu 2019/11 - towards stage one wrap-up
 
