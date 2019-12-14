@@ -18,6 +18,8 @@ if unable to identify era name or year (e.g., fileno = 611, 619, 637, 638, 642, 
 (2) For leap month (e.g. 閏十二月), the month field of "id" attribute has an extra "0.5". For example,
     
     閏十二月四日 (元徽四年) is tagged <time id="476-12.5-04">
+    
+for fileno = 780.
 
 (3) For seasons that appear immediately after a year (e.g., 五年春 in fileno=601), the rule for defining the month is as follows:
 
