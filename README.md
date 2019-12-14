@@ -21,6 +21,10 @@ if unable to identify era name or year (e.g., fileno = 611, 619, 637, 638, 642, 
     
 for fileno = 780.
 
+Issue not yet addressed: 
+   閏月
+in fileno = 787, 793
+
 (3) For seasons that appear immediately after a year (e.g., 五年春 in fileno=601), the rule for defining the month is as follows:
 
     春 = 02, 夏 = 05, 秋 = 08, 冬 = 10
