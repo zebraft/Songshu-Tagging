@@ -13,7 +13,7 @@ https://hackmd.io/@DZR/rJF0y0M2r
 (1) Set time tags to 
     
     <time id="UNKNOWN">
-if unable to identify era name or year. This happens when the first time tag has no era name and/or year (e.g., fileno = 611, 619, 637, 638, 642, 689, 695, 705, 723, 725, 747).
+if unable to identify era name or year. This happens when the first temporal expression in an HTML file has no era name and/or year (e.g., fileno = 611, 619, 637, 638, 642, 689, 695, 705, 723, 725, 747).
 
 (2) For leap month (e.g. 閏十二月), the month field of "id" attribute has an extra "0.5". For example,
     
