@@ -13,7 +13,9 @@ https://hackmd.io/@DZR/rJF0y0M2r
 (1) Set time tags to 
     
     <time id="UNKNOWN">
-if unable to identify era name or year. This happens when the first temporal expression in an HTML file has no era name and/or year (e.g., fileno = 611, 619, 637, 638, 642, 689, 695, 705, 723, 725, 747).
+if unable to identify era name or year. This happens when the first temporal expression in an HTML file has no era name and/or year AND they can't be inferred from the fileno immediately preceding it (e.g., fileno = 611, 619, 637, 638, 642, 689, 695, 705, 723, 725, 747).
+
+However, if the last <time> tag in the preceding fileno does contain an era name or year, it will be used to fill the missing info in the current fileno.  
 
 (2) For leap month (e.g. 閏十二月), the month field of "id" attribute has an extra "0.5". For example,
     
@@ -24,7 +26,7 @@ for fileno = 780.
 Issue not yet addressed: the exact expression 
 
     閏月
-in fileno = 787, 793. This needs to be tagged if it follows another month temporal expression.
+in fileno = 787, 793. This needs to be tagged if it follows another month expression.
 
 (3) For seasons that appear immediately after a year (e.g., 五年春 in fileno=601), the rule for defining the month is as follows:
 
