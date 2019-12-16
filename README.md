@@ -6,7 +6,14 @@ Digital Songshu 2019/11 - towards stage one wrap-up
 https://hackmd.io/@DZR/rJF0y0M2r
 
 ## Updates
-2019-12-14
+
+### 2019-12-16
+Some problematic temporal expressions identified.
+    fileno  temporal expression
+    ======  ==================================
+     783    元嘉中
+
+### 2019-12-14
 
 ### Songshu.py
 
