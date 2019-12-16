@@ -10,9 +10,13 @@ https://hackmd.io/@DZR/rJF0y0M2r
 ### 2019-12-16
 Some problematic temporal expressions identified.
 
-    fileno  temporal expression
-    ======  ==================================
-     783    元嘉中
+    fileno  Temporal expression                 Remark
+    ======  ==================================  =================================================
+     783    元嘉中                               First temporal expr. in this fileno is 二十八年, 
+                                                 which should have 元嘉 as its era name, but is
+                                                 instead tagged as 大明 from a previous fileno
+    ----------------------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------
 
 ### 2019-12-14
 
