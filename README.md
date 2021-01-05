@@ -1,4 +1,4 @@
-# Dignital SongShu Project
+# Digital SongShu Project
 Songshu tagging
 
 Digital Songshu 2019/11 - towards stage one wrap-up
